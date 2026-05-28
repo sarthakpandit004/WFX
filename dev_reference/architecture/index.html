@@ -1,0 +1,1818 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Explicit, low-level C++ web framework">
+      
+      
+      
+      
+        <link rel="prev" href="../overview/">
+      
+      
+        <link rel="next" href="../codebase_architecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Architecture - WFX Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/index.css">
+    
+      <link rel="stylesheet" href="../../css/scrollbar_format.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="WFX Documentation" class="md-header__button md-logo" aria-label="WFX Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            WFX Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting_started/installation/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../core_concepts/project_structure/" class="md-tabs__link">
+          
+  
+  
+  Core Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api_reference/overview/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../overview/" class="md-tabs__link">
+          
+  
+  
+  Developer Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="WFX Documentation" class="md-nav__button md-logo" aria-label="WFX Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    WFX Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/first_program/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_concepts/project_structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_concepts/engine_commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_concepts/wfx_toml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WFX Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/request_and_response/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Request & Response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/middleware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Middleware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/constructor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Constructor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/async/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Async
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/forms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/json/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Json
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#startup-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Startup flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#request-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#template-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Template Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#template-compilation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template compilation pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compilation-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compilation loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transpilation-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transpilation loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../codebase_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codebase Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../globals_and_singletons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Globals & Singletons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../abi_layer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ABI Layer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metrics_and_observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics & Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#startup-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Startup flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#request-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#template-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Template Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#template-compilation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template compilation pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compilation-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compilation loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transpilation-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transpilation loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="architecture">Architecture</h1>
+<p>This page describes how WFX initializes and runs at a high level. It does not cover internal implementation details.</p>
+<hr />
+<h2 id="startup-flow">Startup flow</h2>
+<pre class="mermaid"><code>flowchart TD
+    A([wfx run project]) --&gt; B[SetMinLevel INFO]
+    B --&gt; C[CheckAlreadyRunning]
+
+    C --&gt; D{PID file result}
+    D -- Not found --&gt; G
+    D -- IO error --&gt; E([Fatal: cannot read PID file])
+    D -- Corrupted --&gt; F[Delete corrupted PID file]
+    F --&gt; G
+    D -- OK and alive --&gt; H([Fatal: already running])
+    D -- OK but dead --&gt; I[Delete stale PID file]
+    I --&gt; G
+
+    G[Validate project directory exists] --&gt; K[Create default_logs and crash_logs dir if missing]
+    K --&gt; N[Load wfx.toml and .env\nrequire owner uid and perms 600]
+
+    N --&gt; O[Install SIGINT and SIGTERM handlers]
+    O --&gt; P[Install SIGCHLD handler\nwakes master from nanosleep]
+    P --&gt; Q[GenerateSSLKey]
+    Q --&gt; R[MetricTracer Create\nallocate shared mmap for N workers]
+
+    R --&gt; S[HandleBuildDirectory]
+    S --&gt; T[PreCompileTemplates]
+    T --&gt; U{hasDynamic?}
+    U -- No --&gt; V[Compile source only]
+    U -- Yes --&gt; W[Compile source and templates]
+    V --&gt; X[LoadDynamicTemplatesFromLib]
+    W --&gt; X
+
+    X --&gt; Y{Daemon mode flag set?}
+    Y -- Yes --&gt; Z[fork]
+    Z --&gt; ZA[Parent logs daemon pid\nexits immediately]
+    Z --&gt; ZB[Child calls setsid\nbecomes session leader]
+    ZB --&gt; ZC[Redirect stdin stdout stderr\nto dev/null]
+    ZC --&gt; ZD
+    Y -- No --&gt; ZD[Write PID file via DaemonRegistry]
+
+    ZD --&gt; ZH[Configure logger settings]
+    ZH --&gt; ZI[Open master.log if file logging enabled]
+
+    ZI --&gt; ZK[workerPids resize to N slots\nSpawnWorker 0 to N-1]
+
+    subgraph SW[SpawnWorker per slot]
+        direction TB
+        S1[fork]
+        S1 --&gt; S2{pid == 0?\nchild}
+        S2 -- Yes --&gt; S3[setpgid\nfirst worker becomes group leader\nrest join group]
+        S3 --&gt; S4[MetricTracer InitWorker slot]
+        S4 --&gt; S5[CrashTracer SetWorkerName\nCrashTracer Install]
+        S5 --&gt; S6[Open worker-N.log if file logging enabled]
+        S6 --&gt; S7[Init BufferPool and FileCache]
+        S7 --&gt; S8[Construct CoreEngine\nload user library\nregister routes\nload middleware]
+        S8 --&gt; S9[Install SIGTERM SIGINT SIG_IGN\nSIGPIPE SIG_IGN SIGHUP SIG_IGN]
+        S9 --&gt; S10[PinWorkerToCPU if flag set]
+        S10 --&gt; S11([engine.Listen\nenter event loop])
+        S2 -- No master --&gt; S12[setpgid on child\nstore pid in workerPids slot\nupdate slot self.pid and startedAt]
+    end
+
+    ZK --&gt; SW
+    ZK --&gt; ML
+
+    subgraph ML[Master wait loop]
+        direction TB
+        M1[nanosleep masterPollInterval\nwakes early on SIGCHLD]
+        M1 --&gt; M2[ReapDeadWorkers\nwaitpid WNOHANG loop\nincrement crashes\ncompute backoff\nmark SLOT_PENDING or SLOT_DEAD]
+        M2 --&gt; M3[RevivePendingWorkers\ncheck nextRetryAt per slot\nSpawnWorker if window expired\nincrement restarts and backoffAttempts]
+        M3 --&gt; M4[PollWorkerMetrics\nopen /proc/pid/status per live slot\nparse VmRSS and VmSize\nwrite rssBytes and vmBytes into slot]
+        M4 --&gt; M1
+    end
+
+    ML --&gt; SD{shouldStop set\nby SIGINT or SIGTERM}
+    SD --&gt; SE[Re-enable stdout\nSetMinLevel INFO]
+    SE --&gt; SF[For each live slot\nsend SIGTERM]
+    SF --&gt; SG[Poll waitpid WNOHANG every 100ms\nup to workerShutdownTimeout]
+    SG --&gt; SH{Exited in time?}
+    SH -- No --&gt; SI[Send SIGKILL\nwaitpid to reap zombie]
+    SH -- Yes --&gt; SJ
+    SI --&gt; SJ[MetricTracer Destroy\nmunmap shared region]
+    SJ --&gt; SK[DaemonRegistry Delete PID file]
+    SK --&gt; SL([Exit 0])</code></pre>
+<hr />
+<h2 id="request-flow">Request flow</h2>
+<pre class="mermaid"><code>flowchart TD
+    A([onReceive fires]) --&gt; B[HandleRequest]
+
+    B --&gt; C{Parse result}
+
+    C -- Incomplete headers --&gt; D[Refresh header timeout\nResume receive]
+    C -- Incomplete body --&gt; E[Refresh body timeout\nResume receive]
+    C -- Expect 100 --&gt; F[Send 100 Continue]
+    C -- Expect 417 --&gt; G[Send 417]
+    C -- Parse error --&gt; H[Send 400]
+    C -- Unsupported --&gt; I[Send 501]
+
+    C -- Success --&gt; J[Increment request counter]
+
+    J --&gt; K{/public/ path?}
+    K -- Yes --&gt; L[Resolve and queue file\nSkip routing and middleware]
+    K -- No --&gt; M[Match route in trie]
+
+    M -- No match --&gt; N[Set 404 response]
+    L --&gt; O[FinishRequest]
+    N --&gt; O
+
+    M -- Match --&gt; P[HandleSuccess]
+
+    P --&gt; Q[ExecuteMiddleware\nglobal stack first\nthen per-route stack]
+
+    Q --&gt; R{Middleware result}
+
+    R -- Sync break --&gt; O
+    R -- All passed --&gt; S{Handler type}
+
+    R -- Async suspended --&gt; T[Store stack index\nSuspend execution]
+    T --&gt; U([OnCoroutineComplete fires])
+    U --&gt; V{Middleware action}
+    V -- Continue or Skip --&gt; Q
+    V -- Break --&gt; O
+
+    S -- Sync --&gt; W[Execute handler directly]
+    W --&gt; O
+
+    S -- Async --&gt; X[Inject connection context\nCall async handler\nClear context pointer]
+    X --&gt; Y{Completed synchronously?}
+    Y -- Yes --&gt; O
+    Y -- No --&gt; Z[Suspend execution]
+    Z --&gt; U
+
+    U --&gt; AA{Coroutine result}
+    AA -- IO failure --&gt; AB[Set 500 response]
+    AB --&gt; O
+    AA -- Route completed --&gt; O
+
+    O[FinishRequest\nRefresh idle timeout] --&gt; AC[HandleResponse\nUpdate response metrics]
+
+    AC --&gt; AD{Response type}
+
+    AD -- File --&gt; AE[Hand off to backend\nfile send primitive]
+    AD -- Stream --&gt; AF[Hand off to backend\nstreaming generator]
+    AD -- Buffer --&gt; AG[Hand off to backend\nwrite serialized buffer]
+
+    AE --&gt; AH{Connection state}
+    AF --&gt; AH
+    AG --&gt; AH
+
+    AH -- Keep-alive --&gt; AI[Clear context\nResume receive]
+    AH -- Close --&gt; AJ([Backend closes and releases connection])</code></pre>
+<hr />
+<h2 id="template-flow">Template Flow</h2>
+<h3 id="template-compilation-pipeline">Template compilation pipeline</h3>
+<pre class="mermaid"><code>flowchart TD
+    A([PreCompileTemplates called in master]) --&gt; B[Load template cache from disk]
+    B --&gt; C{Cache result}
+    C -- Corrupted or missing --&gt; D[Clear cache\nmark for resave]
+    C -- Loaded --&gt; E[Ensure output dirs exist]
+    D --&gt; E
+
+    E --&gt; F[Walk template directory recursively]
+    F --&gt; G{File is .html or .htm?}
+    G -- No --&gt; F
+    G -- Yes --&gt; H[Compute relative path and output path]
+
+    H --&gt; I[Get disk file stats]
+    I --&gt; J{Cache entry matches\nmodified time?}
+    J -- Yes --&gt; K[Load from cache\nadd to templates map]
+    K --&gt; F
+    J -- No --&gt; L[Mark for cache update]
+
+    L --&gt; M[Ensure output subdirectory exists]
+    M --&gt; N[Open input file]
+    N --&gt; O{Starts with partial tag?}
+    O -- Yes --&gt; P[Skip file]
+    P --&gt; F
+    O -- No --&gt; Q[Open output file\ncall CompileTemplate]
+
+    Q --&gt; R{Compile result}
+    R -- Failure --&gt; S[Increment error count]
+    S --&gt; F
+    R -- Static --&gt; T[Add to templates map as STATIC]
+    T --&gt; U[Update cache entry]
+    U --&gt; F
+    R -- Dynamic --&gt; V[Generate C identifier from path\ncompute .cpp output path]
+    V --&gt; W[Call GenerateCxxFromTemplate]
+    W --&gt; X{Success?}
+    X -- No --&gt; S
+    X -- Yes --&gt; Y[Add to templates map as DYNAMIC]
+    Y --&gt; U
+
+    F --&gt; Z{Any errors?}
+    Z -- Yes --&gt; ZA([Return failure])
+    Z -- No --&gt; ZB{Cache needs resave?}
+    ZB -- Yes --&gt; ZC[Save cache to disk]
+    ZC --&gt; ZD([Return success with hasDynamic flag])
+    ZB -- No --&gt; ZD</code></pre>
+<h3 id="compilation-loop">Compilation loop</h3>
+<pre class="mermaid"><code>flowchart TD
+    A([CompileTemplate called]) --&gt; B[Init CompilationContext\npush main file onto frame stack]
+
+    B --&gt; C{Frame stack empty?}
+    C -- Yes --&gt; D([Return STATIC or DYNAMIC\nbased on foundDynamicTag])
+
+    C -- No --&gt; E[Read next chunk from top frame]
+    E --&gt; F{Read result}
+    F -- Error --&gt; G([Return FAILURE])
+
+    F -- EOF --&gt; H[Flush carry if any\nFlush write buffer to disk]
+    H --&gt; I{extends tag pending?}
+    I -- Yes --&gt; J[Push parent file onto stack\nclear currentExtendsName]
+    J --&gt; C
+    I -- No --&gt; K[Pop frame from stack]
+    K --&gt; C
+
+    F -- Data --&gt; L{Pending carry?}
+
+    L -- Yes --&gt; M{Carry is single brace\nnext char is not percent?}
+    M -- Yes --&gt; N[Write brace as literal\nclear carry]
+    N --&gt; O[Default chunk loop]
+    M -- No --&gt; P{Carry ends with percent\nnext char is closing brace?}
+    P -- Yes --&gt; Q[Append closing brace\ncomplete tag from carry]
+    Q --&gt; ProcessTag
+    P -- No --&gt; R[Find tag end in current chunk\nappend to carry]
+    R --&gt; ProcessTag
+
+    L -- No --&gt; O
+
+    O --&gt; S{Tag start found?}
+    S -- No --&gt; T[Write remaining as literal\ncheck for trailing brace\nset carry if needed]
+    T --&gt; C
+
+    S -- Yes --&gt; U[Write literal before tag]
+    U --&gt; V{Tag end in same chunk?}
+    V -- No --&gt; W[Assign remainder to carry]
+    W --&gt; C
+    V -- Yes --&gt; X[Extract tag view]
+    X --&gt; ProcessTag
+
+    ProcessTag --&gt; Y{Tag result}
+    Y -- FAILURE --&gt; G
+    Y -- SUCCESS --&gt; Z[Clear carry\nadvance read offset]
+    Z --&gt; O
+    Y -- CONTROL_TO_ANOTHER_FILE --&gt; AA[Push included or extends file\nbreak to outer loop]
+    AA --&gt; C
+    Y -- PASSTHROUGH_DYNAMIC --&gt; AB[Set foundDynamicTag true\nwrite tag as-is to output]
+    AB --&gt; O</code></pre>
+<h3 id="transpilation-loop">Transpilation loop</h3>
+<pre class="mermaid"><code>flowchart TD
+    A([GenerateCxxFromTemplate called]) --&gt; B[Open static html file\ninit TranspilationContext]
+    B --&gt; C[Call GenerateIRFromTemplate]
+
+    C --&gt; D[Read next chunk from file]
+    D --&gt; E{Carry pending?}
+    E -- Yes --&gt; F{Carry is single brace\nnext char is not percent?}
+    F -- Yes --&gt; G[Write brace as literal\nclear carry\ngo to default loop]
+    G --&gt; O
+    F -- No --&gt; H{Carry ends with percent\nnext char is closing brace?}
+    H -- Yes --&gt; I[Complete tag from carry]
+    I --&gt; TagProc
+    H -- No --&gt; J[Find tag end in chunk\nappend to carry]
+    J --&gt; TagProc
+
+    E -- No --&gt; O[Default read loop]
+    O --&gt; K{Tag start found?}
+    K -- No --&gt; L[Accumulate bytes as literal range\ntrack offset and length\ncheck for trailing brace]
+    L --&gt; D
+    K -- Yes --&gt; M[Finalize pending literal op into IR]
+    M --&gt; N{Tag end in same chunk?}
+    N -- No --&gt; P[Assign remainder to carry]
+    P --&gt; D
+    N -- Yes --&gt; Q[Extract tag view]
+    Q --&gt; TagProc
+
+    subgraph TagProc[ProcessTagIR]
+        direction TB
+        T1{Tag type}
+        T1 -- var --&gt; T2[ParseExpr\npool RPN bytecode\nemit VAR op]
+        T1 -- if --&gt; T3[ParseExpr\npush patch frame\nemit IF op]
+        T1 -- elif --&gt; T4[Emit JUMP op\npatch previous to here\nParseExpr\nemit ELIF op]
+        T1 -- else --&gt; T5[Emit JUMP op\npatch previous to here\nemit ELSE marker]
+        T1 -- endif --&gt; T6[Patch all pending jumps\npop patch frame\nemit ENDIF marker]
+        T1 -- for --&gt; T7[ParseExpr for iterable\nget loop var id\npush patch frame\nemit FOR op]
+        T1 -- endfor --&gt; T8[Patch FOR jump state\npop patch frame\nemit ENDFOR op]
+    end
+
+    TagProc --&gt; R[Clear carry\nadvance read offset\ncontinue loop]
+    R --&gt; O
+
+    D --&gt; S{EOF?}
+    S -- No --&gt; D
+    S -- Yes --&gt; U[Finalize trailing literal if any]
+    U --&gt; V{Unmatched if or for blocks?}
+    V -- Yes --&gt; W([Return failure])
+    V -- No --&gt; X[IR complete]
+
+    X --&gt; AA[Open output .cpp file\nwrite header and using declarations]
+    AA --&gt; AB[Write generator class\nGetStateCount returns IR size]
+    AB --&gt; AC[Emit switch case per IR op]
+
+    AC --&gt; AD{Op type}
+    AD -- LITERAL --&gt; AE[Emit return with FileChunk\noffset and length]
+    AD -- VAR --&gt; AF[Emit return with VariableChunk\nfrom GenerateCxxFromRPN]
+    AD -- IF or ELIF --&gt; AG[Emit conditional check\nif false jump to patched state\nfallthrough otherwise]
+    AD -- JUMP --&gt; AH[Emit unconditional state jump]
+    AD -- ELSE or ENDIF --&gt; AI[Emit empty case\nwith fallthrough]
+    AD -- FOR --&gt; AJ[Emit array init\nset loop var and index in ctx\nfallthrough]
+    AD -- ENDFOR --&gt; AK[Emit index check\nloop back if more items\nelse erase loop vars\nfallthrough]
+
+    AE --&gt; AL[Next op]
+    AF --&gt; AL
+    AG --&gt; AL
+    AH --&gt; AL
+    AI --&gt; AL
+    AJ --&gt; AL
+    AK --&gt; AL
+    AL --&gt; AC
+
+    AC --&gt; AM[Emit default case\nwrite class closing brace\nwrite extern C factory function]
+    AM --&gt; AN[Flush write buffer to disk]
+    AN --&gt; AO([Return success])</code></pre>
+<hr />
+<h2 id="key-points">Key points</h2>
+<ul>
+<li>The master process never handles requests. It only initializes shared state and spawns workers.</li>
+<li>Each worker is fully independent. A crash in one worker does not affect others.</li>
+<li>User code runs inside a loaded shared library. It communicates with the engine through ABI-stable function pointer structs.</li>
+<li>All memory for connections and buffers comes from a per-worker pool, not the system allocator.</li>
+<li>Metrics are written to a shared region. Any worker can aggregate across all slots at any time.</li>
+<li>Per-worker subsystems (buffer pool, file cache, crash tracer) are initialized after spawn and are never shared.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.sections", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
